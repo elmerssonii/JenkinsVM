@@ -1,6 +1,18 @@
 pipeline {
     agent any
     stages {
+	stage('Unit Tests') {
+		steps {
+		sh ""
+		docker run --rm \
+		-v "$WORKSPACE":/app \
+		-v /app \
+		node:20-bookworm \
+		sh -c "npm ci && npm test"
+		""
+		}
+	}
+
         stage('Checkout') {
             steps {
                 sh 'git pull origin main'
@@ -18,5 +30,37 @@ pipeline {
                 sh 'docker run -d -p 3000:3000 --name blog blog'
             }
         }
+	stage('Trivy Scan') {
+		steps {
+		sh""
+		trivy image \
+		--format table \
+		--output "$WORKSPACE/trivy-report.txt" \
+		blog:latest
+		""
+		}
+	}
+	stage('OWASP Dependency Check') {
+	steps {
+	dependencyCheck(
+	odcInstallation: 'OWASP-DC',
+	additionalArguments: '--scan .'
+	)
+
+	dependencyCheckPublisher(
+	pattern:'**/dependency-check-report.xml'
+	)
+	}
+	}
+
+	stage('Nikto Scan') {
+	steps {
+	sh ""
+	docker run --rm --network host \
+	hackllc/nikto \
+	-h http://127.0.0.1:3000
+	""
+	}
+	}
     }
 }
