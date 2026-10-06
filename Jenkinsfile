@@ -6,7 +6,7 @@ pipeline {
 		sh '''
 		docker run --rm \
 		-v "$WORKSPACE":/app \
-		-v /app \
+		-w /app \
 		node:20-bookworm \
 		sh -c "npm install && npm test"
 		'''
