@@ -39,7 +39,8 @@ pipeline {
 		--timeout 200m \
 		--download-db-only
 		'''
-
+		}
+	}
 	stage('Trivy Scan') {
 		steps {
 		sh'''
@@ -76,3 +77,4 @@ pipeline {
 	}
     }
 }
+
