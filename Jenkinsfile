@@ -8,7 +8,7 @@ pipeline {
 		-v "$WORKSPACE":/app \
 		-v /app \
 		node:20-bookworm \
-		sh -c "npm ci && npm test"
+		sh -c "npm install && npm test"
 		'''
 		}
 	}
