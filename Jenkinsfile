@@ -6,7 +6,7 @@ pipeline {
 		sh '''
 		docker run --rm \
 		-v "$WORKSPACE":/app \
-		-v /app \
+		-v /app/Blog \
 		node:20-bookworm \
 		sh -c "npm ci && npm test"
 		'''
