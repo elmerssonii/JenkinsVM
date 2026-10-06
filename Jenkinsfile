@@ -3,13 +3,13 @@ pipeline {
     stages {
 	stage('Unit Tests') {
 		steps {
-		sh ""
+		sh '''
 		docker run --rm \
 		-v "$WORKSPACE":/app \
 		-v /app \
 		node:20-bookworm \
 		sh -c "npm ci && npm test"
-		""
+		'''
 		}
 	}
 
@@ -42,14 +42,14 @@ pipeline {
 
 	stage('Trivy Scan') {
 		steps {
-		sh""
+		sh'''
 		trivy image \
 		--cache-dir /var/lib/jenkins/.cache/trivy \
 		--skip-db-update \
 		--format table \
 		--output "$WORKSPACE/trivy-report.txt" \
 		blog:latest
-		""
+		'''
 		}
 	}
 	stage('OWASP Dependency Check') {
@@ -67,11 +67,11 @@ pipeline {
 
 	stage('Nikto Scan') {
 	steps {
-	sh ""
+	sh '''
 	docker run --rm --network host \
 	hackllc/nikto \
 	-h http://127.0.0.1:3000
-	""
+	'''
 	}
 	}
     }
