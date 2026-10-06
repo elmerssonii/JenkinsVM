@@ -30,10 +30,22 @@ pipeline {
                 sh 'docker run -d -p 3000:3000 --name blog blog'
             }
         }
+
+	stage('Update Trivy DB') {
+		steps {
+		sh '''
+		trivy image \
+		--cache-dir /var/lib/jenkins/.cache/trivy \
+		--timeout 200m \
+		--download-db-only
+		'''
+
 	stage('Trivy Scan') {
 		steps {
 		sh""
 		trivy image \
+		--cache-dir /var/lib/jenkins/.cache/trivy \
+		--skip-db-update \
 		--format table \
 		--output "$WORKSPACE/trivy-report.txt" \
 		blog:latest
